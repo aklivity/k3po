@@ -21,8 +21,8 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.kaazing</groupId>
-      <artifactId>k3po.control</artifactId>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>control</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

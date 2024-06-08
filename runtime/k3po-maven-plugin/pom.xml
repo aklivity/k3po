@@ -13,6 +13,7 @@
 
   <artifactId>k3po-maven-plugin</artifactId>
   <name>k3po::runtime::k3po-maven-plugin</name>
+  <packaging>maven-plugin</packaging>
 
   <dependencies>
     <dependency>
