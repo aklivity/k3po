@@ -1,3 +1,6 @@
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
 *.class
 
 # Mobile Tools for Java (J2ME)
