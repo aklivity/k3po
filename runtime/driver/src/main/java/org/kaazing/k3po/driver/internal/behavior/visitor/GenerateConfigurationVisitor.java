@@ -34,7 +34,6 @@ import java.util.function.Supplier;
 
 import javax.el.ValueExpression;
 
-import org.agrona.LangUtil;
 import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -842,7 +841,7 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
                     | IllegalArgumentException
                     | InvocationTargetException ex)
             {
-                LangUtil.rethrowUnchecked(ex);
+                throw new RuntimeException(ex);
             }
 
             return decoder;
