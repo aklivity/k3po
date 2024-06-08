@@ -86,11 +86,6 @@
       <artifactId>net.tcp</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.kaazing</groupId>
-      <artifactId>net.bbosh</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
   <build>
