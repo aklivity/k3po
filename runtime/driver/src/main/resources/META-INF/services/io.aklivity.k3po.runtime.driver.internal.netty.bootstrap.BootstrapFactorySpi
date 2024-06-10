@@ -1,0 +1,5 @@
+io.aklivity.k3po.runtime.driver.internal.netty.bootstrap.tcp.TcpBootstrapFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.bootstrap.udp.UdpBootstrapFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.bootstrap.http.HttpBootstrapFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.bootstrap.file.FileBootstrapFactorySpi
+io.aklivity.k3po.runtime.driver.internal.ext.tls.bootstrap.TlsBootstrapFactorySpi
