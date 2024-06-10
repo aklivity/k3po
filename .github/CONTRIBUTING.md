@@ -1,4 +1,4 @@
-## Contributing to Zilla
+## Contributing to K3PO
 
 [![Build Status][build-status-image]][build-status]
 [![Slack Community][community-image]][community-join]
