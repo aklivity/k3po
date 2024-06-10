@@ -1,0 +1,5 @@
+io.aklivity.k3po.runtime.driver.internal.netty.channel.tcp.TcpChannelAddressFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.channel.udp.UdpChannelAddressFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.channel.http.HttpChannelAddressFactorySpi
+io.aklivity.k3po.runtime.driver.internal.netty.channel.file.FileChannelAddressFactorySpi
+io.aklivity.k3po.runtime.driver.internal.ext.tls.channel.TlsChannelAddressFactorySpi
