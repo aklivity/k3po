@@ -1,0 +1,4 @@
+io.aklivity.k3po.runtime.driver.internal.types.FileTypeSystem
+io.aklivity.k3po.runtime.driver.internal.types.HttpTypeSystem
+io.aklivity.k3po.runtime.driver.internal.types.UdpTypeSystem
+io.aklivity.k3po.runtime.driver.internal.ext.tls.TlsTypeSystem

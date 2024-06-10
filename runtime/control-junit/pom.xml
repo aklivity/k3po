@@ -34,6 +34,14 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.jasig.maven</groupId>
+        <artifactId>maven-notice-plugin</artifactId>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
@@ -62,8 +70,8 @@
               </artifactSet>
               <relocations>
                 <relocation>
-                  <pattern>org.kaazing.k3po.control</pattern>
-                  <shadedPattern>org.kaazing.k3po.junit.shaded.control</shadedPattern>
+                  <pattern>io.aklivity.k3po.runtime.control</pattern>
+                  <shadedPattern>io.aklivity.k3po.runtime.junit.shaded.control</shadedPattern>
                 </relocation>
               </relocations>
               <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
