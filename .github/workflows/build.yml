@@ -37,9 +37,8 @@ jobs:
       uses: actions/upload-artifact@v4
       if: failure()
       with:
-        name: k3po-build-${{ github.event.number }}
+        name: k3po-build-${{ matrix.java }}-${{ github.event.number }}
         path: |
           **/hs_err_pid*.log
           **/target/surefire-reports/
-          **/target/zilla-itests/
           **/target/failsafe-reports/
