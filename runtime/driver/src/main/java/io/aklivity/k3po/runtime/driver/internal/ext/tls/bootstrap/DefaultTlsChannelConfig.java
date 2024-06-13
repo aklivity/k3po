@@ -29,6 +29,7 @@ public class DefaultTlsChannelConfig extends DefaultChannelConfig implements Tls
     private File trustStoreFile;
     private char[] trustStorePassword;
     private String[] applicationProtocols;
+    private String[] cipherSuites;
 
     @Override
     public void setParameters(SSLParameters parameters) {
@@ -106,6 +107,19 @@ public class DefaultTlsChannelConfig extends DefaultChannelConfig implements Tls
     }
 
     @Override
+    public String[] getCipherSuites()
+    {
+        return cipherSuites;
+    }
+
+    @Override
+    public void setCipherSuites(
+        String[] cipherSuites)
+    {
+        this.cipherSuites = cipherSuites;
+    }
+
+    @Override
     protected boolean setOption0(
         String key,
         Object value)
@@ -129,6 +143,10 @@ public class DefaultTlsChannelConfig extends DefaultChannelConfig implements Tls
         else if ("applicationProtocols".equals(key))
         {
             applicationProtocols = ((String) value).split(",");
+        }
+        else if ("cipherSuites".equals(key))
+        {
+            cipherSuites = ((String) value).split(",");
         }
         else
         {

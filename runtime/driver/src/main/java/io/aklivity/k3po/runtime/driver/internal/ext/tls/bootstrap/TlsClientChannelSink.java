@@ -132,6 +132,7 @@ public class TlsClientChannelSink extends AbstractChannelSink {
         char[] keyStorePassword = tlsConnectConfig.getKeyStorePassword();
         char[] trustStorePassword = tlsConnectConfig.getTrustStorePassword();
         String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
+        String[] cipherSuites = tlsConnectConfig.getCipherSuites();
 
         ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
             @Override
@@ -173,6 +174,9 @@ public class TlsClientChannelSink extends AbstractChannelSink {
                 tlsParameters.setServerNames(asList(new SNIHostName(tlsHostname)));
                 if (applicationProtocols != null && applicationProtocols.length > 0) {
                     setApplicationProtocols(tlsParameters, applicationProtocols);
+                }
+                if (cipherSuites != null && cipherSuites.length > 0) {
+                    tlsParameters.setCipherSuites(cipherSuites);
                 }
                 tlsEngine.setSSLParameters(tlsParameters);
 

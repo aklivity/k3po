@@ -101,6 +101,7 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
             String[] applicationProtocols = tlsConnectConfig.getApplicationProtocols();
             boolean wantClientAuth = tlsConnectConfig.getWantClientAuth();
             boolean needClientAuth = tlsConnectConfig.getNeedClientAuth();
+            String[] cipherSuites = tlsConnectConfig.getCipherSuites();
 
             ChannelPipelineFactory pipelineFactory = new ChannelPipelineFactory() {
                 @Override
@@ -147,6 +148,9 @@ public class TlsServerChannelSink extends AbstractServerChannelSink<TlsServerCha
                     tlsParameters.setSNIMatchers(singleton(createSNIMatcher(tlsHostname)));
                     if (applicationProtocols != null && applicationProtocols.length > 0) {
                         setApplicationProtocols(tlsParameters, applicationProtocols);
+                    }
+                    if (cipherSuites != null && cipherSuites.length > 0) {
+                        tlsParameters.setCipherSuites(cipherSuites);
                     }
                     tlsEngine.setSSLParameters(tlsParameters);
 
