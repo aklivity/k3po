@@ -31,6 +31,7 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
     private String[] applicationProtocols;
     private boolean needClientAuth;
     private boolean wantClientAuth;
+    private String[] cipherSuites;
 
     @Override
     public void setParameters(SSLParameters parameters) {
@@ -108,6 +109,19 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
     }
 
     @Override
+    public String[] getCipherSuites()
+    {
+        return cipherSuites;
+    }
+
+    @Override
+    public void setCipherSuites(
+            String[] cipherSuites)
+    {
+        this.cipherSuites = cipherSuites;
+    }
+
+    @Override
     protected boolean setOption0(
         String key,
         Object value)
@@ -133,6 +147,9 @@ public class DefaultTlsServerChannelConfig extends DefaultServerChannelConfig im
                 break;
             case "wantClientAuth":
                 wantClientAuth = Boolean.valueOf((String) value);
+                break;
+            case "cipherSuites":
+                cipherSuites = ((String) value).split(",");
                 break;
             default:
                 return false;

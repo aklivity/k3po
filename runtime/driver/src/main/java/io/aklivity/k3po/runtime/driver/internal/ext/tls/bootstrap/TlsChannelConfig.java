@@ -46,4 +46,8 @@ public interface TlsChannelConfig extends ChannelConfig {
     void setApplicationProtocols(String[] applicationProtocol);
 
     String[] getApplicationProtocols();
+
+    void setCipherSuites(String[] cipherSuites);
+
+    String[] getCipherSuites();
 }
