@@ -573,7 +573,17 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstReadAdviseNode node, State state) {
-        injectBoundIfBeforeConnected(node, state);
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
         switch (state.connectivityState) {
         case BOUND:
         case CONNECTED:
@@ -587,7 +597,17 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstWriteAdviseNode node, State state) {
-        injectBoundIfBeforeConnected(node, state);
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
         switch (state.connectivityState) {
         case BOUND:
         case CONNECTED:
@@ -601,7 +621,17 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstReadAdvisedNode node, State state) {
-        injectBoundIfBeforeConnected(node, state);
+        switch (state.connectivityState) {
+        case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
         switch (state.connectivityState) {
         case BOUND:
         case CONNECTED:
@@ -615,19 +645,6 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
 
     @Override
     public AstScriptNode visit(AstWriteAdvisedNode node, State state) {
-        injectBoundIfBeforeConnected(node, state);
-        switch (state.connectivityState) {
-        case BOUND:
-        case CONNECTED:
-            state.streamables.add(node);
-            break;
-        default:
-            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
-        }
-        return null;
-    }
-
-    private void injectBoundIfBeforeConnected(AstStreamableNode node, State state) {
         switch (state.connectivityState) {
         case NONE:
         case OPENED:
@@ -638,6 +655,16 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         default:
             break;
         }
+
+        switch (state.connectivityState) {
+        case BOUND:
+        case CONNECTED:
+            state.streamables.add(node);
+            break;
+        default:
+            throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
+        }
+        return null;
     }
 
     @Override
