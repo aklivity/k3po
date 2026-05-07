@@ -575,12 +575,23 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstReadAdviseNode node, State state) {
         switch (state.connectivityState) {
         case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        switch (state.connectivityState) {
+        case BOUND:
         case CONNECTED:
+            state.streamables.add(node);
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
         }
-        state.streamables.add(node);
         return null;
     }
 
@@ -588,12 +599,23 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstWriteAdviseNode node, State state) {
         switch (state.connectivityState) {
         case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        switch (state.connectivityState) {
+        case BOUND:
         case CONNECTED:
+            state.streamables.add(node);
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
         }
-        state.streamables.add(node);
         return null;
     }
 
@@ -601,12 +623,23 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstReadAdvisedNode node, State state) {
         switch (state.connectivityState) {
         case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        switch (state.connectivityState) {
+        case BOUND:
         case CONNECTED:
+            state.streamables.add(node);
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
         }
-        state.streamables.add(node);
         return null;
     }
 
@@ -614,12 +647,23 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
     public AstScriptNode visit(AstWriteAdvisedNode node, State state) {
         switch (state.connectivityState) {
         case NONE:
+        case OPENED:
+            AstBoundNode boundNode = new AstBoundNode();
+            boundNode.setRegionInfo(node.getRegionInfo());
+            boundNode.accept(this, state);
+            break;
+        default:
+            break;
+        }
+
+        switch (state.connectivityState) {
+        case BOUND:
         case CONNECTED:
+            state.streamables.add(node);
             break;
         default:
             throw new IllegalStateException(String.format("Unexpected \"%s\" before connected", node));
         }
-        state.streamables.add(node);
         return null;
     }
 
