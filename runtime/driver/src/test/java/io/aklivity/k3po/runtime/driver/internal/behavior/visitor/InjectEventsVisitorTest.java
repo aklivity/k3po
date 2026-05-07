@@ -21,7 +21,12 @@ import org.junit.Test;
 
 import io.aklivity.k3po.runtime.driver.internal.behavior.parser.Parser;
 import io.aklivity.k3po.runtime.driver.internal.behavior.visitor.InjectEventsVisitor;
+import io.aklivity.k3po.runtime.lang.internal.ast.AstConnectedNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.AstReadAdviseNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.AstReadAdvisedNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstScriptNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteAdviseNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteAdvisedNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.builder.AstScriptNodeBuilder;
 import io.aklivity.k3po.runtime.lang.internal.parser.ScriptParseException;
 import io.aklivity.k3po.runtime.lang.internal.parser.ScriptParser;
@@ -327,7 +332,7 @@ public class InjectEventsVisitorTest {
 
         String script =
             "# tcp.client.connect-then-close\n" +
-            "connect tcp://localhost:7788\n" +
+            "connect 'tcp://localhost:7788'\n" +
             "connected\n" +
             "close\n" +
             "closed\n" +
@@ -336,5 +341,175 @@ public class InjectEventsVisitorTest {
 
         ScriptParser parser = new Parser();
         parser.parse(script);
+    }
+
+    @Test
+    public void shouldInjectOpenedAndBoundBeforeReadAdviseAndConnected()
+        throws Exception {
+
+        // @formatter:off
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addOpenedEvent()
+                    .done()
+                .addBoundEvent()
+                    .done()
+                .done()
+            .done();
+        AstReadAdviseNode expectedAdvise = new AstReadAdviseNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedAdvise);
+        AstConnectedNode expectedConnected = new AstConnectedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedConnected);
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .done()
+            .done();
+        AstReadAdviseNode inputAdvise = new AstReadAdviseNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputAdvise);
+        AstConnectedNode inputConnected = new AstConnectedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputConnected);
+        // @formatter:on
+
+        InjectEventsVisitor injectEvents = new InjectEventsVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectEvents, new InjectEventsVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
+    }
+
+    @Test
+    public void shouldInjectOpenedAndBoundBeforeReadAdvisedAndConnected()
+        throws Exception {
+
+        // @formatter:off
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addOpenedEvent()
+                    .done()
+                .addBoundEvent()
+                    .done()
+                .done()
+            .done();
+        AstReadAdvisedNode expectedAdvised = new AstReadAdvisedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedAdvised);
+        AstConnectedNode expectedConnected = new AstConnectedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedConnected);
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .done()
+            .done();
+        AstReadAdvisedNode inputAdvised = new AstReadAdvisedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputAdvised);
+        AstConnectedNode inputConnected = new AstConnectedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputConnected);
+        // @formatter:on
+
+        InjectEventsVisitor injectEvents = new InjectEventsVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectEvents, new InjectEventsVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
+    }
+
+    @Test
+    public void shouldInjectOpenedAndBoundBeforeWriteAdviseAndConnected()
+        throws Exception {
+
+        // @formatter:off
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addOpenedEvent()
+                    .done()
+                .addBoundEvent()
+                    .done()
+                .done()
+            .done();
+        AstWriteAdviseNode expectedAdvise = new AstWriteAdviseNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedAdvise);
+        AstConnectedNode expectedConnected = new AstConnectedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedConnected);
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .done()
+            .done();
+        AstWriteAdviseNode inputAdvise = new AstWriteAdviseNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputAdvise);
+        AstConnectedNode inputConnected = new AstConnectedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputConnected);
+        // @formatter:on
+
+        InjectEventsVisitor injectEvents = new InjectEventsVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectEvents, new InjectEventsVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
+    }
+
+    @Test
+    public void shouldInjectOpenedAndBoundBeforeWriteAdvisedAndConnected()
+        throws Exception {
+
+        // @formatter:off
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addOpenedEvent()
+                    .done()
+                .addBoundEvent()
+                    .done()
+                .done()
+            .done();
+        AstWriteAdvisedNode expectedAdvised = new AstWriteAdvisedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedAdvised);
+        AstConnectedNode expectedConnected = new AstConnectedNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedConnected);
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .done()
+            .done();
+        AstWriteAdvisedNode inputAdvised = new AstWriteAdvisedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputAdvised);
+        AstConnectedNode inputConnected = new AstConnectedNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputConnected);
+        // @formatter:on
+
+        InjectEventsVisitor injectEvents = new InjectEventsVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectEvents, new InjectEventsVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
+    }
+
+    @Test
+    public void shouldKeepReadAdviseAfterConnectedUnchanged()
+        throws Exception {
+
+        // @formatter:off
+        AstScriptNode expectedScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addOpenedEvent()
+                    .done()
+                .addBoundEvent()
+                    .done()
+                .addConnectedEvent()
+                    .done()
+                .done()
+            .done();
+        AstReadAdviseNode expectedAdvise = new AstReadAdviseNode();
+        expectedScriptNode.getStreams().get(0).getStreamables().add(expectedAdvise);
+
+        AstScriptNode inputScriptNode = new AstScriptNodeBuilder()
+            .addConnectStream()
+                .addConnectedEvent()
+                    .done()
+                .done()
+            .done();
+        AstReadAdviseNode inputAdvise = new AstReadAdviseNode();
+        inputScriptNode.getStreams().get(0).getStreamables().add(inputAdvise);
+        // @formatter:on
+
+        InjectEventsVisitor injectEvents = new InjectEventsVisitor();
+        AstScriptNode actualScriptNode = inputScriptNode.accept(injectEvents, new InjectEventsVisitor.State());
+
+        assertEquals(expectedScriptNode, actualScriptNode);
     }
 }
