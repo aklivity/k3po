@@ -203,18 +203,21 @@ public class K3poRule extends Verifier {
     }
 
     /**
-     * Blocking call to await until k3po has acked PREPARED via the control protocol, i.e. all accepts are open and any
-     * k3po-owned shared resources have been allocated.  Unlike {@link #start()} and {@link #finish()}, this method does not
-     * drive the script forward; it only observes the PREPARED state produced by the implicit start inside {@link #finish()}.
+     * Installs a gate that holds the script between PREPARED and STARTABLE, then blocks until k3po has acked PREPARED via
+     * the control protocol (all accepts are open and any k3po-owned shared resources have been allocated), and returns a
+     * release {@link Runnable}.  The script will not be driven forward past PREPARED until the returned Runnable is invoked.
      * <p>
-     * This is intended to be called concurrently from a non-test thread (e.g. a watcher thread spawned by a consuming rule)
-     * that needs to block until k3po is ready before driving an external runtime.  It is safe to call more than once; once
-     * PREPARED has been acked it returns immediately.
+     * This is intended to be called from a non-test thread that must both block until k3po is prepared and keep the script
+     * paused afterwards while it performs further setup, releasing the script (by invoking the returned Runnable) only once
+     * that setup is complete.  It thus combines awaiting PREPARED with a one-shot hold on the PREPARED&#8594;STARTABLE
+     * transition.
      * <p>
-     * Declares no checked exception so it can be supplied directly as a {@link Runnable} (e.g.
-     * {@code engineRule.beforeStart(k3po::awaitPrepared)}); any failure while preparing the script is rethrown unchecked.
+     * The gate is installed before awaiting PREPARED so it is always visible to the script runner before it observes the
+     * PREPARED state; this avoids a race where the script could pass an as-yet-uninstalled gate.  Any failure while
+     * preparing the script is rethrown unchecked.
      */
-    public void awaitPrepared() {
+    public Runnable deferStartable() {
+        Runnable release = latch.deferStartable();
         try {
             latch.awaitPrepared();
         } catch (InterruptedException ex) {
@@ -223,6 +226,7 @@ public class K3poRule extends Verifier {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+        return release;
     }
 
     /**
