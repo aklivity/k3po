@@ -30,15 +30,22 @@ public class Latch {
     private final CountDownLatch startable;
     private final CountDownLatch finished;
     private volatile Thread testThread;
-    
-    private final AtomicBoolean testThreadInterrupted = new AtomicBoolean(false); 
+    private volatile CountDownLatch deferred;
+
+    private final AtomicBoolean testThreadInterrupted = new AtomicBoolean(false);
 
     public Latch() {
         state = State.INIT;
 
         prepared = new CountDownLatch(1);
+        deferred = new CountDownLatch(0);
         startable = new CountDownLatch(1);
         finished = new CountDownLatch(1);
+    }
+
+    public Runnable deferStartable() {
+        deferred = new CountDownLatch(1);
+        return deferred::countDown;
     }
 
     public void notifyPrepared() {
@@ -83,6 +90,7 @@ public class Latch {
     }
 
     public void awaitStartable() throws Exception {
+        deferred.await();
         startable.await();
         if (exception != null) {
             throw exception;
