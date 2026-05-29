@@ -203,6 +203,29 @@ public class K3poRule extends Verifier {
     }
 
     /**
+     * Blocking call to await until k3po has acked PREPARED via the control protocol, i.e. all accepts are open and any
+     * k3po-owned shared resources have been allocated.  Unlike {@link #start()} and {@link #finish()}, this method does not
+     * drive the script forward; it only observes the PREPARED state produced by the implicit start inside {@link #finish()}.
+     * <p>
+     * This is intended to be called concurrently from a non-test thread (e.g. a watcher thread spawned by a consuming rule)
+     * that needs to block until k3po is ready before driving an external runtime.  It is safe to call more than once; once
+     * PREPARED has been acked it returns immediately.
+     * <p>
+     * Declares no checked exception so it can be supplied directly as a {@link Runnable} (e.g.
+     * {@code engineRule.beforeStart(k3po::awaitPrepared)}); any failure while preparing the script is rethrown unchecked.
+     */
+    public void awaitPrepared() {
+        try {
+            latch.awaitPrepared();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(ex);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
      * Blocking call to await for the K3po threads to stop executing.  If the connects have not already been initiated via the
      * start() method, they will be implicitly called.
      * @throws Exception if an error has occurred in the execution of the tests.
