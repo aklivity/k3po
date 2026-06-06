@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>io.aklivity.k3po</groupId>
   <artifactId>k3po</artifactId>
-  <version>3.4.2</version>
+  <version>3.4.3</version>
   <packaging>pom</packaging>
   <name>k3po</name>
   <url>https://github.com/aklivity/k3po</url>
@@ -90,22 +90,22 @@
       <dependency>
         <groupId>org.kaazing</groupId>
         <artifactId>net.api</artifactId>
-        <version>[1.1.0.0, 1.2.0.0)</version>
+        <version>1.1.0.9</version>
       </dependency>
       <dependency>
         <groupId>org.kaazing</groupId>
         <artifactId>net.data</artifactId>
-        <version>[1.1.0.0, 1.2.0.0)</version>
+        <version>1.1.0.9</version>
       </dependency>
       <dependency>
         <groupId>org.kaazing</groupId>
         <artifactId>net.tcp</artifactId>
-        <version>[1.1.0.0, 1.2.0.0)</version>
+        <version>1.1.0.9</version>
       </dependency>
       <dependency>
         <groupId>org.kaazing</groupId>
         <artifactId>net.bbosh</artifactId>
-        <version>[1.1.0.0, 1.2.0.0)</version>
+        <version>1.1.0.9</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
