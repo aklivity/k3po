@@ -302,6 +302,32 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
         rejected.setRegionInfo(rejectedNode.getRegionInfo());
         pipelineAsMap.put(rejectedName, rejected);
 
+        if (rejectedNode.getType() != null) {
+            AstWriteConfigNode configNode = new AstWriteConfigNode();
+            configNode.setType(rejectedNode.getType());
+            configNode.setRegionInfo(rejectedNode.getRegionInfo());
+            for (TypeInfo<?> field : rejectedNode.getType().getNamedFields()) {
+                AstValue<?> value = rejectedNode.getValue(field.getName());
+                if (value != null) {
+                    configNode.setValue(field.getName(), value);
+                }
+            }
+            for (AstValue<?> value : rejectedNode.getValues()) {
+                configNode.addValue(value);
+            }
+
+            Function<AstValue<?>, MessageEncoder> encoderFactory = v -> v.accept(new GenerateWriteEncoderVisitor(), null);
+            ChannelHandler handler = behaviorSystem.newWriteConfigHandler(configNode, encoderFactory);
+
+            if (handler == null) {
+                throw new IllegalStateException("Unrecognized configuration type: " + rejectedNode.getType());
+            }
+
+            String configName = String.format("writeConfig#%d (%s)", pipelineAsMap.size() + 1,
+                    rejectedNode.getType().getName());
+            pipelineAsMap.put(configName, handler);
+        }
+
         for (AstStreamableNode streamable : rejectedNode.getStreamables()) {
             streamable.accept(this, state);
         }

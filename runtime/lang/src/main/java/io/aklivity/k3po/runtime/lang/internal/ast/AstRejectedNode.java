@@ -15,11 +15,77 @@
  */
 package io.aklivity.k3po.runtime.lang.internal.ast;
 
+import static io.aklivity.k3po.runtime.lang.internal.ast.util.AstUtil.equivalent;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstValue;
+import io.aklivity.k3po.runtime.lang.types.StructuredTypeInfo;
+
 public class AstRejectedNode extends AstAcceptableNode {
+
+    private StructuredTypeInfo type;
+    private Collection<AstValue<?>> values;
+    private Map<String, AstValue<?>> valuesByName;
+
+    public AstRejectedNode() {
+        this.valuesByName = new LinkedHashMap<>();
+        this.values = new LinkedList<>();
+    }
+
+    public void setType(StructuredTypeInfo type) {
+        this.type = type;
+    }
+
+    public StructuredTypeInfo getType() {
+        return type;
+    }
+
+    public void setValue(String name, AstValue<?> value) {
+        valuesByName.put(name, value);
+    }
+
+    public AstValue<?> getValue(String name) {
+        return valuesByName.get(name);
+    }
+
+    public void addValue(AstValue<?> value) {
+        values.add(value);
+    }
+
+    public Collection<AstValue<?>> getValues() {
+        return values;
+    }
+
+    @Override
+    protected int hashTo() {
+        int hashCode = super.hashTo();
+
+        if (type != null) {
+            hashCode <<= 4;
+            hashCode ^= type.hashCode();
+        }
+        if (valuesByName != null) {
+            hashCode <<= 4;
+            hashCode ^= valuesByName.hashCode();
+        }
+
+        return hashCode;
+    }
 
     @Override
     protected boolean equalTo(AstAcceptableNode that) {
-        return that instanceof AstRejectedNode && super.equalTo((AstRejectedNode) that);
+        return that instanceof AstRejectedNode && equalTo((AstRejectedNode) that);
+    }
+
+    protected boolean equalTo(AstRejectedNode that) {
+        return super.equalTo(that) &&
+                equivalent(this.type, that.type) &&
+                equivalent(this.values, that.values) &&
+                equivalent(this.valuesByName, that.valuesByName);
     }
 
     @Override
@@ -37,6 +103,16 @@ public class AstRejectedNode extends AstAcceptableNode {
         if (acceptName != null) {
             sb.append(" as ");
             sb.append(acceptName);
+        }
+
+        if (type != null) {
+            sb.append(' ').append(type);
+            for (Map.Entry<String, AstValue<?>> entry : valuesByName.entrySet()) {
+                sb.append(' ').append(entry.getKey()).append('=').append(entry.getValue());
+            }
+            for (AstValue<?> value : values) {
+                sb.append(' ').append(value);
+            }
         }
 
         sb.append('\n');

@@ -15,9 +15,16 @@
  */
 package io.aklivity.k3po.runtime.lang.internal.ast.builder;
 
+import javax.el.ValueExpression;
+
 import io.aklivity.k3po.runtime.lang.internal.ast.AstAcceptNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstRejectedNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstScriptNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstExpressionValue;
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstLiteralBytesValue;
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstLiteralTextValue;
+import io.aklivity.k3po.runtime.lang.internal.el.ExpressionContext;
+import io.aklivity.k3po.runtime.lang.types.StructuredTypeInfo;
 
 public final class AstRejectedNodeBuilder extends AbstractAstRejectedNodeBuilder<AstRejectedNode> {
 
@@ -27,6 +34,41 @@ public final class AstRejectedNodeBuilder extends AbstractAstRejectedNodeBuilder
 
     public AstRejectedNodeBuilder setAcceptName(String acceptName) {
         node.setAcceptName(acceptName);
+        return this;
+    }
+
+    public AstRejectedNodeBuilder setType(StructuredTypeInfo type) {
+        node.setType(type);
+        return this;
+    }
+
+    public AstRejectedNodeBuilder setValue(String name, String value) {
+        node.setValue(name, new AstLiteralTextValue(value));
+        return this;
+    }
+
+    public AstRejectedNodeBuilder setValue(String name, byte[] value) {
+        node.setValue(name, new AstLiteralBytesValue(value));
+        return this;
+    }
+
+    public AstRejectedNodeBuilder setValue(String name, ValueExpression value, ExpressionContext environment) {
+        node.setValue(name, new AstExpressionValue<>(value, environment));
+        return this;
+    }
+
+    public AstRejectedNodeBuilder addValue(String value) {
+        node.addValue(new AstLiteralTextValue(value));
+        return this;
+    }
+
+    public AstRejectedNodeBuilder addValue(byte[] value) {
+        node.addValue(new AstLiteralBytesValue(value));
+        return this;
+    }
+
+    public AstRejectedNodeBuilder addValue(ValueExpression value, ExpressionContext environment) {
+        node.addValue(new AstExpressionValue<>(value, environment));
         return this;
     }
 
@@ -63,6 +105,41 @@ public final class AstRejectedNodeBuilder extends AbstractAstRejectedNodeBuilder
 
         public ScriptNested<R> setAcceptName(String acceptName) {
             node.setAcceptName(acceptName);
+            return this;
+        }
+
+        public ScriptNested<R> setType(StructuredTypeInfo type) {
+            node.setType(type);
+            return this;
+        }
+
+        public ScriptNested<R> setValue(String name, String value) {
+            node.setValue(name, new AstLiteralTextValue(value));
+            return this;
+        }
+
+        public ScriptNested<R> setValue(String name, byte[] value) {
+            node.setValue(name, new AstLiteralBytesValue(value));
+            return this;
+        }
+
+        public ScriptNested<R> setValue(String name, ValueExpression value, ExpressionContext environment) {
+            node.setValue(name, new AstExpressionValue<>(value, environment));
+            return this;
+        }
+
+        public ScriptNested<R> addValue(String value) {
+            node.addValue(new AstLiteralTextValue(value));
+            return this;
+        }
+
+        public ScriptNested<R> addValue(byte[] value) {
+            node.addValue(new AstLiteralBytesValue(value));
+            return this;
+        }
+
+        public ScriptNested<R> addValue(ValueExpression value, ExpressionContext environment) {
+            node.addValue(new AstExpressionValue<>(value, environment));
             return this;
         }
 

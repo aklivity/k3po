@@ -898,6 +898,9 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     private static class AstRejectedNodeVisitor extends AstNodeVisitor<AstRejectedNode> {
 
+        private Iterator<TypeInfo<?>> namedFields;
+        private int anonymousFields;
+
         public AstRejectedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
@@ -908,8 +911,45 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
             if (ctx.text != null) {
                 node.setAcceptName(ctx.text.getText());
             }
+
+            if (ctx.configType != null) {
+                String configQName = ctx.configType.getText();
+
+                StructuredTypeInfo configType = TYPE_SYSTEM.writeConfig(configQName);
+                namedFields = configType.getNamedFields().iterator();
+                anonymousFields = configType.getAnonymousFields();
+
+                node.setType(configType);
+            }
+
             super.visitRejectedNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
+        }
+
+        @Override
+        public AstRejectedNode visitWriteValue(WriteValueContext ctx) {
+
+            AstValueVisitor<?> visitor = new AstValueVisitor<>(factory, environment, Object.class);
+            AstValue<?> value = visitor.visit(ctx);
+
+            if (value != null) {
+
+                if (namedFields.hasNext()) {
+                    TypeInfo<?> field = namedFields.next();
+                    node.setValue(field.getName(), value);
+                }
+                else if (anonymousFields > 0) {
+                    anonymousFields--;
+                    node.addValue(value);
+                }
+                else {
+                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
+                }
+
+                childInfos().add(value.getRegionInfo());
+            }
+
             return node;
         }
 
