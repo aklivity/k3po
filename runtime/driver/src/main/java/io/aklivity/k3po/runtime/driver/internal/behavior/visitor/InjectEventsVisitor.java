@@ -62,6 +62,9 @@ import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteFlushNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteNotifyNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteOptionNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteValueNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstValue;
+import io.aklivity.k3po.runtime.lang.types.StructuredTypeInfo;
+import io.aklivity.k3po.runtime.lang.types.TypeInfo;
 
 public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -144,6 +147,20 @@ public class InjectEventsVisitor implements AstNode.Visitor<AstScriptNode, State
         AstRejectedNode newRejectedNode = new AstRejectedNode();
         newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
         newRejectedNode.setAcceptName(rejectedNode.getAcceptName());
+
+        StructuredTypeInfo type = rejectedNode.getType();
+        if (type != null) {
+            newRejectedNode.setType(type);
+            for (TypeInfo<?> field : type.getNamedFields()) {
+                AstValue<?> value = rejectedNode.getValue(field.getName());
+                if (value != null) {
+                    newRejectedNode.setValue(field.getName(), value);
+                }
+            }
+            for (AstValue<?> value : rejectedNode.getValues()) {
+                newRejectedNode.addValue(value);
+            }
+        }
 
         state.streamables = newRejectedNode.getStreamables();
         for (AstStreamableNode streamable : rejectedNode.getStreamables()) {

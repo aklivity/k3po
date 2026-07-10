@@ -49,6 +49,8 @@ import io.aklivity.k3po.runtime.driver.internal.behavior.handler.RejectedHandler
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.barrier.AwaitBarrierDownstreamHandler;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.barrier.AwaitBarrierUpstreamHandler;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.barrier.NotifyBarrierHandler;
+import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.ChannelDecoder;
+import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.DecodingHandler;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.Masker;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.Maskers;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.MessageDecoder;
@@ -760,7 +762,32 @@ public class GenerateConfigurationVisitor implements AstNode.Visitor<Configurati
 
         RegionInfo regionInfo = node.getRegionInfo();
 
-        ConnectAbortedHandler handler = new ConnectAbortedHandler();
+        ChannelDecoder decoder = null;
+        if (node.getType() != null) {
+            AstReadConfigNode configNode = new AstReadConfigNode();
+            configNode.setType(node.getType());
+            configNode.setRegionInfo(regionInfo);
+            for (TypeInfo<?> field : node.getType().getNamedFields()) {
+                AstValueMatcher matcher = node.getMatcher(field.getName());
+                if (matcher != null) {
+                    configNode.setMatcher(field.getName(), matcher);
+                }
+            }
+            for (AstValueMatcher matcher : node.getMatchers()) {
+                configNode.addMatcher(matcher);
+            }
+
+            Function<AstValueMatcher, MessageDecoder> decoderFactory = m -> m.accept(new GenerateReadDecoderVisitor(), state.configuration);
+            ChannelHandler configHandler = behaviorSystem.newReadConfigHandler(configNode, decoderFactory);
+
+            if (!(configHandler instanceof DecodingHandler)) {
+                throw new IllegalStateException("Unrecognized configuration type: " + node.getType());
+            }
+
+            decoder = ((DecodingHandler) configHandler).getDecoder();
+        }
+
+        ConnectAbortedHandler handler = new ConnectAbortedHandler(decoder);
         handler.setRegionInfo(regionInfo);
 
         Map<String, ChannelHandler> pipelineAsMap = state.pipelineAsMap;

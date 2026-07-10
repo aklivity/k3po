@@ -68,6 +68,9 @@ import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteFlushNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteNotifyNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteOptionNode;
 import io.aklivity.k3po.runtime.lang.internal.ast.AstWriteValueNode;
+import io.aklivity.k3po.runtime.lang.internal.ast.value.AstValue;
+import io.aklivity.k3po.runtime.lang.types.StructuredTypeInfo;
+import io.aklivity.k3po.runtime.lang.types.TypeInfo;
 
 public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, State> {
 
@@ -170,6 +173,20 @@ public class AssociateStreamsVisitor implements AstNode.Visitor<AstScriptNode, S
 
         AstRejectedNode newRejectedNode = new AstRejectedNode();
         newRejectedNode.setRegionInfo(rejectedNode.getRegionInfo());
+
+        StructuredTypeInfo type = rejectedNode.getType();
+        if (type != null) {
+            newRejectedNode.setType(type);
+            for (TypeInfo<?> field : type.getNamedFields()) {
+                AstValue<?> value = rejectedNode.getValue(field.getName());
+                if (value != null) {
+                    newRejectedNode.setValue(field.getName(), value);
+                }
+            }
+            for (AstValue<?> value : rejectedNode.getValues()) {
+                newRejectedNode.addValue(value);
+            }
+        }
 
         String acceptName = rejectedNode.getAcceptName();
         if (acceptName == null) {
