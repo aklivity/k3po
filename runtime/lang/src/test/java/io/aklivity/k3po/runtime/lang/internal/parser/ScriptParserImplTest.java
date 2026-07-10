@@ -919,6 +919,23 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseRejectedWithExtension() throws Exception {
+
+        String scriptFragment = "rejected test:config \"configName\" [0x01 0x02 0x03 0x04]";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstRejectedNode actual = parser.parseWithStrategy(scriptFragment, REJECTED);
+
+        AstRejectedNode expected = new AstRejectedNodeBuilder()
+                .setType(CONFIG_CONFIG)
+                .addValue("configName")
+                .addValue(new byte[]{0x01, 0x02, 0x03, 0x04})
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseConnectAbort() throws Exception {
 
         String scriptFragment = "connect abort";
