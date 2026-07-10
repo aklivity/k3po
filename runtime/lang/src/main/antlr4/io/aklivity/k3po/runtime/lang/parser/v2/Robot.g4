@@ -67,7 +67,7 @@ acceptedNode
     ;
 
 rejectedNode
-    : RejectedKeyword ( text=Name )? rejectableNode*
+    : RejectedKeyword ( text=Name )? ( configType=QualifiedName writeValue* )? rejectableNode*
     ;
 
 connectNode
