@@ -170,7 +170,7 @@ connectAbortNode
     ;
 
 connectAbortedNode
-    : ConnectKeyword AbortedKeyword
+    : ConnectKeyword AbortedKeyword ( configType=QualifiedName matcher* )?
     ;
 
 closeNode

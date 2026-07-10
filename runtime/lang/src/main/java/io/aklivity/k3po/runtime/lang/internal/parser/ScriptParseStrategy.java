@@ -1032,6 +1032,9 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
 
     private static class AstConnectAbortedNodeVisitor extends AstNodeVisitor<AstConnectAbortedNode> {
 
+        private Iterator<TypeInfo<?>> namedFields;
+        private int anonymousFields;
+
         public AstConnectAbortedNodeVisitor(ExpressionFactory factory, ExpressionContext environment) {
             super(factory, environment);
         }
@@ -1039,8 +1042,45 @@ public abstract class ScriptParseStrategy<T extends AstRegion> {
         @Override
         public AstConnectAbortedNode visitConnectAbortedNode(ConnectAbortedNodeContext ctx) {
             node = new AstConnectAbortedNode();
+
+            if (ctx.configType != null) {
+                String configQName = ctx.configType.getText();
+
+                StructuredTypeInfo configType = TYPE_SYSTEM.readConfig(configQName);
+                namedFields = configType.getNamedFields().iterator();
+                anonymousFields = configType.getAnonymousFields();
+
+                node.setType(configType);
+            }
+
             super.visitConnectAbortedNode(ctx);
             node.setRegionInfo(asParallelRegion(childInfos, ctx));
+            return node;
+        }
+
+        @Override
+        public AstConnectAbortedNode visitMatcher(MatcherContext ctx) {
+
+            AstValueMatcherVisitor visitor = new AstValueMatcherVisitor(factory, environment);
+            AstValueMatcher matcher = visitor.visit(ctx);
+
+            if (matcher != null) {
+
+                if (namedFields.hasNext()) {
+                    TypeInfo<?> field = namedFields.next();
+                    node.setMatcher(field.getName(), matcher);
+                }
+                else if (anonymousFields > 0) {
+                    anonymousFields--;
+                    node.addMatcher(matcher);
+                }
+                else {
+                    throw new IllegalStateException(String.format("Unexpected %s syntax", node.getType()));
+                }
+
+                childInfos().add(matcher.getRegionInfo());
+            }
+
             return node;
         }
 

@@ -15,6 +15,7 @@
  */
 package io.aklivity.k3po.runtime.driver.internal.behavior.handler.event;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelDownstreamHandler;
 import org.jboss.netty.channel.ChannelEvent;
 import org.jboss.netty.channel.ChannelFuture;
@@ -25,14 +26,26 @@ import org.jboss.netty.channel.ChannelStateEvent;
 
 import io.aklivity.k3po.runtime.driver.internal.behavior.ScriptProgressException;
 import io.aklivity.k3po.runtime.driver.internal.behavior.handler.ExecutionHandler;
+import io.aklivity.k3po.runtime.driver.internal.behavior.handler.codec.ChannelDecoder;
 
 public class ConnectAbortedHandler extends ExecutionHandler implements ChannelDownstreamHandler {
+
+    private final ChannelDecoder decoder;
+
+    public ConnectAbortedHandler() {
+        this(null);
+    }
+
+    public ConnectAbortedHandler(ChannelDecoder decoder) {
+        this.decoder = decoder;
+    }
 
     @Override
     public void handleDownstream(ChannelHandlerContext ctx, ChannelEvent e) throws Exception {
         if (e instanceof ChannelStateEvent) {
             ChannelStateEvent cse = (ChannelStateEvent) e;
             if (cse.getState() == ChannelState.CONNECTED) {
+                final Channel channel = ctx.getChannel();
                 final ChannelFuture connectFuture = cse.getFuture();
                 final ChannelFuture handlerFuture = getHandlerFuture();
                 connectFuture.addListener(new ChannelFutureListener() {
@@ -44,7 +57,18 @@ public class ConnectAbortedHandler extends ExecutionHandler implements ChannelDo
                             handlerFuture.setFailure(new ScriptProgressException(getRegionInfo(), "connect not aborted"));
                         }
                         else {
-                            handlerFuture.setSuccess();
+                            try {
+                                if (decoder == null || decoder.decode(channel)) {
+                                    handlerFuture.setSuccess();
+                                }
+                                else {
+                                    handlerFuture.setFailure(
+                                            new ScriptProgressException(getRegionInfo(), "connect aborted extension mismatch"));
+                                }
+                            }
+                            catch (Exception ex) {
+                                handlerFuture.setFailure(ex);
+                            }
                         }
                     }
                 });

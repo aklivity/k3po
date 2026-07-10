@@ -962,6 +962,23 @@ public class ScriptParserImplTest {
     }
 
     @Test
+    public void shouldParseConnectAbortedWithExtension() throws Exception {
+
+        String scriptFragment = "connect aborted test:config \"value1\" \"value2\"";
+
+        ScriptParserImpl parser = new ScriptParserImpl();
+        AstConnectAbortedNode actual = parser.parseWithStrategy(scriptFragment, CONNECT_ABORTED);
+
+        AstConnectAbortedNode expected = new AstConnectAbortedNodeBuilder()
+                .setType(CONFIG_CONFIG)
+                .addMatcherExactText("value1")
+                .addMatcherExactText("value2")
+                .done();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void shouldParseClose() throws Exception {
 
         String scriptFragment = "close";
